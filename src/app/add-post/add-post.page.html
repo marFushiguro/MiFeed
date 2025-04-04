@@ -1,0 +1,42 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Crear Post</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="close()">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-list>
+    <ion-item>
+      <ion-label position="stacked">Texto</ion-label>
+      <ion-textarea [(ngModel)]="post.text" placeholder="Escribe algo..."></ion-textarea>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Imagen</ion-label>
+      <input hidden id="fileInput" type="file" (change)="uploadImage($event)" accept="image/*" />
+      <!-- Botones para tomar foto o seleccionar desde la galería -->
+      <ion-button expand="block" color="medium" (click)="selectImageFromGallery()">
+        <ion-icon name="image-outline"></ion-icon> Seleccionar Imagen
+      </ion-button>
+      <ion-button expand="block" color="medium" (click)="takePhoto()">
+        <ion-icon name="camera"></ion-icon> Tomar Foto
+      </ion-button>
+    </ion-item>
+
+    <div class="image-preview" *ngIf="selectedImage">
+      <img [src]="selectedImage" class="preview-img" />
+    </div>
+
+    <ion-item>
+      <ion-label position="stacked">Ubicación</ion-label>
+      <ion-input [(ngModel)]="post.location" placeholder="Ingresa una ubicación"></ion-input>
+    </ion-item>
+  </ion-list>
+
+  <ion-button expand="full" color="success" (click)="publishPost()">Publicar</ion-button>
+</ion-content>

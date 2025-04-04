@@ -1,27 +1,14 @@
-#container {
+/* src/app/home/home.page.scss */
+.container {
   text-align: center;
-
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
+  padding: 20px;
 }
 
-#container strong {
-  font-size: 20px;
-  line-height: 26px;
+ion-footer {
+  background-color: #f8f8f8; /* Color de fondo de la barra inferior */
+  padding: 10px 0;
 }
 
-#container p {
-  font-size: 16px;
-  line-height: 22px;
-
-  color: #8c8c8c;
-
-  margin: 0;
-}
-
-#container a {
-  text-decoration: none;
+ion-tab-button {
+  --color-selected: #4CAF50; /* Cambia el color del icono seleccionado */
 }
