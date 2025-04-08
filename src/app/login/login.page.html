@@ -9,29 +9,36 @@
     <ion-row class="ion-justify-content-center">
       <ion-col size-md="6" size-sm="12">
         
-        <!-- LOGO -->
-        <div class="logo-container">
-          <img src="assets/logoA.png" alt="App Logo">
+        <!-- Contenedor con fondo de la tarjeta y logo dentro -->
+        <div class="card">
+          <!-- LOGO dentro de la tarjeta -->
+          <div class="logo-container">
+            <img src="assets/logoArt.png" alt="App Logo">
+          </div>
+
+          <!-- Formulario dentro de la tarjeta -->
+          <form (ngSubmit)="login()">
+            <div class="input-container">
+              <ion-item class="custom-input">
+                <ion-label position="floating">Email</ion-label>
+                <ion-input [(ngModel)]="email" name="email" type="email" required></ion-input>
+              </ion-item>
+
+              <ion-item class="custom-input">
+                <ion-label position="floating">Password</ion-label>
+                <ion-input [(ngModel)]="password" name="password" type="password" required></ion-input>
+              </ion-item>
+
+              <!-- Botón de login con el estilo personalizado -->
+              <button type="submit">Login</button>
+            </div>
+          </form>
+
+          <p class="register-link">
+            ¿No tienes cuenta?  
+            <a [routerLink]="['/register']">Regístrate</a>
+          </p>
         </div>
-
-        <form (ngSubmit)="login()">
-          <ion-item class="custom-input">
-            <ion-label position="floating">Email</ion-label>
-            <ion-input [(ngModel)]="email" name="email" type="email" required></ion-input>
-          </ion-item>
-
-          <ion-item class="custom-input">
-            <ion-label position="floating">Password</ion-label>
-            <ion-input [(ngModel)]="password" name="password" type="password" required></ion-input>
-          </ion-item>
-
-          <ion-button expand="full" type="submit">Login</ion-button>
-        </form>
-
-        <p class="register-link">
-          ¿No tienes cuenta?  
-          <a [routerLink]="['/register']">Regístrate</a>
-        </p>
       </ion-col>
     </ion-row>
   </ion-grid>

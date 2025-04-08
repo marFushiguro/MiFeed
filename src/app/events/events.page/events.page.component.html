@@ -1,0 +1,114 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button routerLink="/home">
+        <ion-icon name="arrow-back"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Eventos</ion-title>
+    <ion-buttons slot="end">
+      <ion-button routerLink="/my-events">
+        <ion-label>Mis Eventos</ion-label>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <!-- Crear evento -->
+  <!-- Crear evento con diseño personalizado compacto -->
+<div class="card">
+  <div style="padding: 16px; display: flex; flex-direction: column; gap: 12px; color: #000; font-weight: 500;">
+    <div style="text-align: center;">
+      <h3 style="margin: 0; font-size: 18px;">Crear Evento</h3>
+    </div>
+
+    <ion-item>
+      <ion-label position="floating">Título</ion-label>
+      <ion-input [(ngModel)]="eventTitle"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Descripción</ion-label>
+      <ion-input [(ngModel)]="eventDescription"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Fecha</ion-label>
+      <ion-input type="date" [(ngModel)]="eventDate"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Reglas</ion-label>
+      <ion-textarea [(ngModel)]="eventRules"></ion-textarea>
+    </ion-item>
+
+    <ion-button expand="block" size="small" color="dark" (click)="createEvent()">Crear</ion-button>
+  </div>
+</div>
+
+
+
+
+  <!-- Listado de eventos -->
+  <ion-list>
+    <ion-item *ngFor="let event of events">
+      <ion-avatar slot="start">
+        <img [src]="event.userPhoto || 'assets/default-avatar.png'" />
+      </ion-avatar>
+      <ion-label>
+        <h3>{{ event.userName || 'Usuario desconocido' }}</h3>
+        <h2>{{ event.titulo }}</h2>
+        <p>{{ event.descripcion }}</p>
+        <p><strong>Fecha límite:</strong> {{ event.fechaLimite }}</p>
+        <p><strong>Reglas:</strong> {{ event.reglas.join(', ') }}</p>
+
+        <!-- Comentarios -->
+        <div *ngIf="event.comments?.length > 0">
+          <ion-list>
+            <ion-item *ngFor="let comment of event.comments; let i = index">
+              <ion-label>
+                <p>{{ comment.text }}</p>
+                <p><strong>Likes:</strong> {{ comment.likes }}</p>
+                <ion-button *ngIf="!comment.likedBy.includes(userId)" (click)="likeComment(event.id, i)">Like</ion-button>
+              </ion-label>
+            </ion-item>
+          </ion-list>
+        </div>
+
+        <!-- Input para agregar un comentario -->
+        <ion-item>
+          <ion-input [(ngModel)]="commentTextPorEvento[event.id]" placeholder="Escribe un comentario..."></ion-input>
+          <ion-button (click)="addComment(event.id)">Comentar</ion-button>
+        </ion-item>
+
+        <ion-button *ngIf="event.userId === userId && !event.finalizado" (click)="uploadImageToEvent(event.id, 'imageUrl')">Subir Imagen</ion-button>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>
+
+<!-- Barra de navegación inferior -->
+<ion-footer>
+  <ion-toolbar>
+    <ion-tabs>
+      <ion-tab-bar slot="bottom">
+        <ion-tab-button routerLink="/home">
+          <ion-icon name="home"></ion-icon>
+          <ion-label>Inicio</ion-label>
+        </ion-tab-button>
+
+        <ion-tab-button (click)="openAddPostModal()">
+          <ion-icon name="add-circle"></ion-icon>
+          <ion-label>Agregar</ion-label>
+        </ion-tab-button>
+
+        <ion-tab-button routerLink="/eventos">
+          <ion-icon name="calendar"></ion-icon>
+          <ion-label>Eventos</ion-label>
+        </ion-tab-button>
+      </ion-tab-bar>
+    </ion-tabs>
+  </ion-toolbar>
+</ion-footer>

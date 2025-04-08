@@ -1,42 +1,102 @@
+/* Estilos para la tarjeta de fondo */
+.card {
+  width: 100%;
+  height: auto;
+  border: none;
+  border-radius: 10px;
+  background: radial-gradient(ellipse farthest-side at 76% 77%, rgba(245, 228, 212, 0.25) 4%, rgba(255, 255, 255, 0) calc(4% + 1px)), 
+              radial-gradient(circle at 76% 40%, #fef6ec 4%, rgba(255, 255, 255, 0) 4.18%), 
+              linear-gradient(135deg, #ff0000 0%, #000036 100%), 
+              radial-gradient(ellipse at 28% 0%, #ffcfac 0%, rgba(98, 149, 144, 0.5) 100%), 
+              linear-gradient(180deg, #cd6e8a 0%, #f5eab0 69%, #d6c8a2 70%, #a2758d 100%);
+  background-blend-mode: normal, normal, screen, overlay, normal;
+  box-shadow: 0px 0px 10px 1px #000000;
+  padding: 20px;
+  position: relative;
+}
+
+/* Contenedor para el logo */
 .logo-container {
-  display: flex;
-  justify-content: center;
+  text-align: center;
   margin-bottom: 20px;
-
-  img {
-    width: 100px;
-    height: auto;
-  }
 }
 
+.logo-container img {
+  width: 90px; /* Ajusta el tamaño del logo aquí */
+  height: auto;
+}
+
+/* Estilos para los campos de entrada con borde */
 .custom-input {
-  --background: #f0f0f0;
-  --border-radius: 10px;
-  --border-color: #4394ff;
-  --border-width: 2px;
-  --padding-start: 10px;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
 }
 
-ion-button {
-  margin-top: 15px;
-  background-color: #007bff;
-  color: white;
+/* Añadimos borde a los campos de entrada */
+.custom-input .ion-input {
+  background-color: transparent;
+  border: 1px solid #ccc; /* Borde gris claro */
+  border-radius: 10px;
+  padding: 10px;
+  font-size: 14px;
+  color: #333;
+  transition: border-color 0.3s;
 }
 
-.register-link, .login-link {
+.custom-input .ion-input::placeholder {
+  color: #888; /* Color de placeholder */
+}
+
+.custom-input .ion-input:focus {
+  border-color: #3880ff; /* Color de borde cuando está en foco */
+}
+
+/* Enlace de login */
+.login-link {
   text-align: center;
-  margin-top: 10px;
-
-  a {
-    color: #70d2ff;
-    font-weight: bold;
-    cursor: pointer;
-  }
+  margin-top: 20px;
+  font-size: 14px;
 }
 
-.error-text {
-  color: red;
-  text-align: center;
-  margin-top: 5px;
+.login-link a {
+  color: #3880ff;
+  text-decoration: none;
+}
+
+/* Estilos para el botón de Register */
+button {
+  width: 9em;
+  height: 3em;
+  border-radius: 30em;
+  font-size: 15px;
+  font-family: inherit;
+  border: none;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  box-shadow: 6px 6px 12px #c5c5c5,
+              -6px -6px 12px #ffffff;
+  margin: 0 auto; /* Centramos el botón */
+  display: block; /* Aseguramos que el botón sea un bloque para centrarlo */
+
+  color: #302f2f;         /* <-- Aquí */
+  font-weight: 600;  
+}
+
+
+button::before {
+  content: '';
+  width: 0;
+  height: 3em;
+  border-radius: 30em;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-image: linear-gradient(to right, #cc2fcc 0%, #f9f047 100%);
+  transition: .5s ease;
+  display: block;
+  z-index: -1;
+}
+
+button:hover::before {
+  width: 9em;
 }

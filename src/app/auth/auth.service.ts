@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth';
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, User } from 'firebase/auth';
 import { getFirestore, doc, setDoc, updateDoc, getDoc } from 'firebase/firestore';
 import { firebaseConfig } from '../services/firebase-config';
 import { Router } from '@angular/router';
@@ -15,15 +15,25 @@ export class AuthService {
   private db = getFirestore(this.app);
   private messaging = getMessaging(this.app);
 
+  private currentUser: User | null = null;
+  private username: string | null = null;
+  private nombre: string | null = null;
+
   constructor(private router: Router) {}
 
-  // Método para obtener el ID del usuario autenticado
   getUserId(): string | null {
-    const user = this.auth.currentUser;
-    return user ? user.uid : null;
+    return this.auth.currentUser?.uid || null;
   }
 
-  async register(email: string, password: string, username: string) {
+  getUsername(): string | null {
+    return this.username;
+  }
+
+  getNombre(): string | null {
+    return this.nombre;
+  }
+
+  async register(email: string, password: string, username: string, nombre: string) {
     try {
       const userCredential = await createUserWithEmailAndPassword(this.auth, email, password);
       const user = userCredential.user;
@@ -34,8 +44,14 @@ export class AuthService {
         uid: user.uid,
         email: email,
         username: username,
+        nombre: nombre,
         createdAt: new Date().toISOString(),
       });
+
+      // Guardar valores en el servicio
+      this.currentUser = user;
+      this.username = username;
+      this.nombre = nombre;
 
       // Obtener y guardar el token de FCM
       await this.saveToken(user.uid);
@@ -52,17 +68,40 @@ export class AuthService {
   async login(email: string, password: string) {
     try {
       const userCredential = await signInWithEmailAndPassword(this.auth, email, password);
-      console.log('✅ Usuario autenticado:', userCredential.user);
-      
-      // Guardar el token de FCM después del login
-      await this.saveToken(userCredential.user.uid);
-      
+      const user = userCredential.user;
+      this.currentUser = user;
+
+      const userRef = doc(this.db, 'users', user.uid);
+      const docSnap = await getDoc(userRef);
+
+      if (docSnap.exists()) {
+        interface UserData {
+          username: string;
+          nombre: string;
+          email: string;
+          uid: string;
+          createdAt: string;
+          fcmToken?: string;
+        }
+
+        const data = docSnap.data() as UserData;
+        this.username = data.username;
+        this.nombre = data.nombre;
+        console.log('✅ Usuario autenticado:', data);
+      } else {
+        console.log('❌ No se encontró el documento del usuario');
+        this.username = null;
+        this.nombre = null;
+      }
+
+      // Guardar el token de FCM
+      await this.saveToken(user.uid);
+
+      // Redirigir a /home
       this.router.navigate(['/home']).then(() => {
         console.log('✅ Redirigido a /home');
-      }).catch(err => {
-        console.error('❌ Error en la redirección:', err);
       });
-  
+
       return userCredential;
     } catch (error: unknown) {
       console.error('❌ Error en login:', error);
@@ -75,22 +114,27 @@ export class AuthService {
 
   async saveToken(userId: string) {
     try {
-      const token = await getToken(this.messaging, { vapidKey: "TU_VAPID_KEY" });
+      const token = await getToken(this.messaging, {
+        vapidKey: 'TU_VAPID_KEY', // ← Reemplaza con tu clave real
+      });
 
       if (token) {
-        console.log("📲 Token de FCM obtenido:", token);
+        console.log('📲 Token de FCM obtenido:', token);
         const userRef = doc(this.db, 'users', userId);
         await updateDoc(userRef, { fcmToken: token });
       } else {
-        console.log("⚠️ No se pudo obtener el token.");
+        console.log('⚠️ No se pudo obtener el token.');
       }
     } catch (error) {
-      console.error("❌ Error al obtener token:", error);
+      console.error('❌ Error al obtener token:', error);
     }
   }
 
   logout() {
     signOut(this.auth);
+    this.username = null;
+    this.nombre = null;
+    this.currentUser = null;
     this.router.navigate(['/login']);
   }
 }

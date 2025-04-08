@@ -28,6 +28,16 @@ export class LoginPage {
   ) {}
 
   async login() {
+    if (!this.email.trim() || !this.password.trim()) {
+      alert('Por favor completa todos los campos.');
+      return;
+    }
+
+    if (this.password.length < 8) {
+      alert('La contraseña debe tener al menos 8 caracteres.');
+      return;
+    }
+
     try {
       const userCredential = await this.authService.login(this.email, this.password);
       const user = userCredential.user;
@@ -38,22 +48,18 @@ export class LoginPage {
 
       console.log('✅ Login exitoso, UID:', user.uid);
 
-      // Obtener el token FCM
       const fcmToken = await this.notificationService.requestPermission();
 
       if (fcmToken) {
         console.log('✅ Token FCM obtenido:', fcmToken);
-        // Guardar token FCM en Firestore
         await this.firestoreService.saveFcmToken(user.uid, fcmToken);
         console.log('✅ Token FCM guardado en Firestore');
       } else {
         console.warn('⚠️ No se obtuvo token FCM');
       }
 
-      // Escuchar notificaciones
       this.notificationService.listenForMessages();
 
-      // Redirigir al home
       await this.router.navigate(['/home']);
       console.log('✅ Redirigido a /home');
       

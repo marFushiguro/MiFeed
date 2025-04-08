@@ -1,0 +1,59 @@
+<ion-header>
+  <ion-toolbar>
+    <!-- Botón de regreso -->
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/eventos"></ion-back-button> <!-- Enlace al listado de eventos -->
+    </ion-buttons>
+    <ion-title>Mis Eventos</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <!-- Listado de eventos del usuario -->
+  <ion-list>
+    <ion-item *ngFor="let event of myEvents">
+      <ion-label>
+        <h2>{{ event.titulo }}</h2>
+        <p>{{ event.descripcion }}</p>
+        <p><strong>Fecha límite:</strong> {{ event.fechaLimite }}</p>
+        <p><strong>Reglas:</strong> {{ event.reglas.join(', ') }}</p>
+      </ion-label>
+      <!-- Botones para editar o eliminar el evento -->
+      <ion-button *ngIf="event.userId === userId" (click)="editEvent(event.id)">Editar</ion-button>
+      <ion-button *ngIf="event.userId === userId" color="danger" (click)="deleteEvent(event.id)">Eliminar</ion-button>
+    </ion-item>
+  </ion-list>
+
+  <!-- Mensaje si no hay eventos -->
+  <ion-item *ngIf="myEvents.length === 0">
+    <ion-label>No tienes eventos creados.</ion-label>
+  </ion-item>
+
+  <!-- Formulario para editar evento -->
+  <ion-card *ngIf="editingEvent">
+    <ion-card-header>
+      <ion-card-title>Editar Evento</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-item>
+        <ion-label position="floating">Título</ion-label>
+        <ion-input [(ngModel)]="editingEvent.titulo"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="floating">Descripción</ion-label>
+        <ion-textarea [(ngModel)]="editingEvent.descripcion"></ion-textarea>
+      </ion-item>
+      <ion-item>
+        <ion-label position="floating">Fecha límite</ion-label>
+        <ion-input [(ngModel)]="editingEvent.fechaLimite" type="date"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="floating">Reglas (separadas por coma)</ion-label>
+        <ion-input [(ngModel)]="editingEvent.reglasTexto"></ion-input>
+      </ion-item>
+
+      <ion-button expand="block" (click)="saveChanges()">Guardar cambios</ion-button>
+      <ion-button expand="block" color="medium" (click)="cancelEdit()">Cancelar</ion-button>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

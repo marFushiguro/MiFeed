@@ -18,7 +18,8 @@
 
     <ion-item>
       <ion-label position="stacked">Imagen</ion-label>
-      <input hidden id="fileInput" type="file" (change)="uploadImage($event)" accept="image/*" />
+      <input hidden #fileInput type="file" (change)="uploadImage($event)" accept="image/*" />
+
       <!-- Botones para tomar foto o seleccionar desde la galería -->
       <ion-button expand="block" color="medium" (click)="selectImageFromGallery()">
         <ion-icon name="image-outline"></ion-icon> Seleccionar Imagen

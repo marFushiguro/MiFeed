@@ -1,5 +1,5 @@
-import { Component, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
-import { ModalController } from '@ionic/angular';
+import { Component, ViewChild, ElementRef, AfterViewInit, Input } from '@angular/core';
+import { ModalController, ToastController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
@@ -17,10 +17,11 @@ import { Platform } from '@ionic/angular';
   styleUrls: ['./add-post.page.scss'],
 })
 export class AddPostPage implements AfterViewInit {
-  post = {
+  @Input() post: any = {
     text: '',
     imageUrl: '',
     location: '',
+    id: null,
   };
 
   selectedFile: File | null = null;
@@ -34,11 +35,13 @@ export class AddPostPage implements AfterViewInit {
     private modalCtrl: ModalController,
     private firestoreService: FirestoreService,
     private authService: AuthService,
-    private platform: Platform
+    private platform: Platform,
+    private toastCtrl: ToastController
   ) {}
 
   async ngOnInit() {
     this.userId = await this.authService.getUserId();
+    this.selectedImage = this.post.imageUrl || null;
   }
 
   ngAfterViewInit() {
@@ -57,54 +60,60 @@ export class AddPostPage implements AfterViewInit {
       return;
     }
 
-    let imageUrl = '';
+    let imageUrl = this.post.imageUrl;
 
     if (this.selectedFile) {
       imageUrl = await this.uploadImageToFirebase();
     }
 
-    this.savePost(imageUrl);
+    if (this.post.id) {
+      // Editar post existente
+      await this.firestoreService.updatePost(this.post.id, {
+        text: this.post.text,
+        imageUrl,
+        location: this.post.location,
+      });
+    } else {
+      // Crear nuevo post
+      if (!this.userId) {
+        console.error('❌ No se encontró el ID del usuario autenticado');
+        return;
+      }
+      const username = await this.authService.getUsername();
+      if (!username) {
+        console.error('❌ El nombre de usuario no está disponible');
+        return;
+      }
+
+
+      await this.firestoreService.createPost(
+        this.post.text,
+        imageUrl,
+        this.post.location,
+        '',
+        this.userId,
+        username
+      );
+    }
+
+    this.presentToast(this.post.id ? 'Post actualizado' : 'Post publicado');
+    this.modalCtrl.dismiss(true);
   }
 
   private async uploadImageToFirebase(): Promise<string> {
     try {
-      if (!this.selectedFile) {
-        console.error('❌ No hay archivo seleccionado para subir.');
-        return '';
-      }
-
+      if (!this.selectedFile) return '';
       const fileName = `posts/${Date.now()}_${this.selectedFile.name}`;
       const fileRef = ref(this.storage, fileName);
       const blob = await this.selectedFile.arrayBuffer();
       await uploadBytes(fileRef, new Blob([blob]));
-
-      const imageUrl = await getDownloadURL(fileRef);
-      console.log('✅ Imagen subida. URL:', imageUrl);
-      return imageUrl;
+      return await getDownloadURL(fileRef);
     } catch (error) {
       console.error('❌ Error subiendo imagen:', error);
       return '';
     }
   }
 
-  private async savePost(imageUrl: string) {
-    if (!this.userId) {
-      console.error('❌ No se encontró el ID del usuario autenticado');
-      return;
-    }
-
-    await this.firestoreService.createPost(
-      this.post.text,
-      imageUrl,
-      this.post.location,
-      '',
-      this.userId
-    );
-
-    this.modalCtrl.dismiss(true);
-  }
-
-  // Seleccionar imagen desde la galería o input file
   async selectImageFromGallery() {
     if (this.platform.is('cordova')) {
       try {
@@ -113,20 +122,15 @@ export class AddPostPage implements AfterViewInit {
           source: CameraSource.Photos,
           quality: 100,
         });
-
         this.selectedImage = photo.webPath || '';
-        console.log('✅ Imagen seleccionada:', this.selectedImage);
       } catch (error) {
         console.error('❌ Error seleccionando imagen:', error);
       }
     } else {
-      if (this.fileInput) {
-        this.fileInput.nativeElement.click();
-      }
+      if (this.fileInput) this.fileInput.nativeElement.click();
     }
   }
 
-  // Tomar foto usando la cámara y subirla a Firebase
   async takePhoto() {
     try {
       const photo = await Camera.getPhoto({
@@ -135,25 +139,16 @@ export class AddPostPage implements AfterViewInit {
         quality: 100,
       });
 
-      if (!photo.base64String) {
-        console.error('❌ No se pudo obtener la imagen en base64');
-        return;
-      }
+      if (!photo.base64String) return;
 
-      // Convertimos la imagen base64 a Blob
       const imageBlob = this.base64ToBlob(photo.base64String, 'image/jpeg');
       this.selectedFile = new File([imageBlob], `photo_${Date.now()}.jpg`, { type: 'image/jpeg' });
-
-      // Asignamos la imagen tomada como preview
       this.selectedImage = `data:image/jpeg;base64,${photo.base64String}`;
-
-      console.log('✅ Foto tomada y convertida a archivo:', this.selectedFile);
     } catch (error) {
       console.error('❌ Error tomando foto:', error);
     }
   }
 
-  // Convertir Base64 a Blob
   private base64ToBlob(base64: string, contentType = '') {
     const byteCharacters = atob(base64);
     const byteArrays = [];
@@ -163,12 +158,20 @@ export class AddPostPage implements AfterViewInit {
     return new Blob([new Uint8Array(byteArrays)], { type: contentType });
   }
 
-  // Manejar carga de imágenes desde el input file
   uploadImage(event: any) {
     const file = event.target.files[0];
     if (file) {
       this.selectedFile = file;
       this.selectedImage = URL.createObjectURL(file);
     }
+  }
+
+  async presentToast(message: string) {
+    const toast = await this.toastCtrl.create({
+      message,
+      duration: 2000,
+      position: 'bottom',
+    });
+    await toast.present();
   }
 }

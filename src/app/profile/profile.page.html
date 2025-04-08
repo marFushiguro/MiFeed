@@ -1,31 +1,58 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-title>Perfil</ion-title>
+  <ion-toolbar color="primary">
+    <ion-title>Mi Perfil</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="volver()">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding">
   <div class="profile-container">
-    <!-- Imagen de perfil -->
-    <div class="profile-picture">
-      <img [src]="user.photoURL || 'assets/default-avatar.png'" alt="Foto de perfil">
-      <ion-button fill="clear" (click)="changePhoto()">
-        <ion-icon name="camera"></ion-icon>
+    <!-- Foto de perfil -->
+    <div class="photo-container">
+      <img [src]="fotoPerfil || 'assets/default-profile.png'" alt="Foto de perfil" class="foto-perfil" />
+      <ion-button (click)="seleccionarFoto()">Subir foto</ion-button>
+      <ion-button (click)="tomarFoto()">Tomar foto</ion-button>
+      <ion-button expand="block" color="success" *ngIf="fotoNueva" (click)="guardarFoto()">
+        Guardar foto
       </ion-button>
     </div>
 
-    <!-- Campo para editar el username -->
-    <ion-item>
-      <ion-label position="floating">Username</ion-label>
-      <ion-input [(ngModel)]="user.username"></ion-input>
-    </ion-item>
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Información del Usuario</ion-card-title>
+      </ion-card-header>
 
-    <!-- Botón para guardar cambios -->
-    <ion-button expand="full" color="primary" (click)="saveChanges()">Guardar Cambios</ion-button>
+      <ion-card-content>
+        <ion-item>
+          <ion-label position="stacked">Nombre</ion-label>
+          <ion-input [(ngModel)]="nombre" [readonly]="!isEditing"></ion-input>
+        </ion-item>
 
-    <!-- Botón para volver a Home -->
-    <ion-button expand="full" color="secondary" [routerLink]="['/home']">
-      <ion-icon name="arrow-back"></ion-icon> Volver a Home
-    </ion-button>
+        <ion-item>
+          <ion-label position="stacked">Username</ion-label>
+          <ion-input [(ngModel)]="username" [readonly]="!isEditing"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Email</ion-label>
+          <ion-input [value]="email" readonly></ion-input>
+        </ion-item>
+
+        <div class="botones">
+          <button class="Btn" *ngIf="!isEditing" (click)="habilitarEdicion()">
+            Editar
+            <svg class="svg" viewBox="0 0 512 512">
+              <path d="..." />
+            </svg>
+          </button>
+
+          <button *ngIf="isEditing" (click)="guardarCambios()">Guardar Cambios</button>
+        </div>
+      </ion-card-content>
+    </ion-card>
   </div>
 </ion-content>

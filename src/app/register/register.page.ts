@@ -18,28 +18,41 @@ export class RegisterPage {
   password = '';
   confirmPassword = '';
   username = '';
+  nombre = '';  
   mostrarErrorPasswords = false;
+  mostrarErrorPasswordLength = false;
 
   constructor(private authService: AuthService, private router: Router) {}
 
+  // Validación de contraseñas (en tiempo real)
   validarPasswords() {
-    this.mostrarErrorPasswords = this.confirmPassword !== '' && this.password !== this.confirmPassword;
+    this.mostrarErrorPasswords = this.password !== this.confirmPassword;
+  }
+
+  // Validación de la longitud de la contraseña (al escribir)
+  validarPasswordLength() {
+    this.mostrarErrorPasswordLength = this.password.length < 8;
   }
 
   formValido(): boolean {
-    return this.email !== '' && this.password !== '' && this.username !== '' && 
-           this.confirmPassword !== '' && !this.mostrarErrorPasswords;
+    return this.nombre.trim() !== '' &&
+           this.username.trim() !== '' &&
+           this.email.trim() !== '' &&
+           this.password.trim() !== '' &&
+           this.confirmPassword.trim() !== '' &&
+           this.password.length >= 8 &&
+           !this.mostrarErrorPasswords;
   }
 
   async register() {
-    if (this.mostrarErrorPasswords) {
-      alert('Las contraseñas no coinciden.');
+    if (!this.formValido()) {
+      alert('Por favor completa todos los campos correctamente.');
       return;
     }
 
     try {
-      await this.authService.register(this.email, this.password, this.username);
-      alert('Registro exitoso');
+      await this.authService.register(this.email, this.password, this.username, this.nombre); 
+      alert('✅ Registro exitoso');
       this.router.navigate(['/login']);
     } catch (error: unknown) {
       let errorMessage = 'Ocurrió un error, por favor intente nuevamente.';

@@ -73,3 +73,4 @@ Thumbs.db
 # Ignorar credenciales de Firebase
 server/firebase-adminsdk.json
 server/ionic-2-e5f0a-firebase-adminsdk-fbsvc-52d9484c54.json
+

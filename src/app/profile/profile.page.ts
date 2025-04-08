@@ -1,63 +1,106 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
+import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../auth/auth.service';
-import { getFirestore, doc, updateDoc } from 'firebase/firestore';
-import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { getAuth } from 'firebase/auth';
+import { doc, getFirestore, getDoc, updateDoc } from 'firebase/firestore';
+import { firebaseConfig } from '../services/firebase-config';
+import { initializeApp } from 'firebase/app';
+import { getStorage, ref, uploadString, getDownloadURL } from 'firebase/storage';
+import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { IonicModule } from '@ionic/angular';
+import { RouterModule } from '@angular/router';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-profile',
   templateUrl: './profile.page.html',
   styleUrls: ['./profile.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule]
+  imports: [CommonModule, FormsModule, IonicModule, RouterModule],
 })
-export class ProfilePage {
-  user = {
-    username: '',
-    photoURL: ''
-  };
+export class ProfilePage implements OnInit {
+  userId: string | null = null;
+  nombre: string = '';
+  username: string = '';
+  email: string = '';
+  fotoPerfil: string = '';
+  isEditing: boolean = false;
+  fotoNueva: string = '';
 
-  private auth = getAuth();
-  private db = getFirestore();
+  private db = getFirestore(initializeApp(firebaseConfig));
   private storage = getStorage();
 
-  constructor(private authService: AuthService) {
-    this.loadUserData();
-  }
+  constructor(private authService: AuthService, private location: Location) {}
 
-  async loadUserData() {
-    const currentUser = this.auth.currentUser;
-    if (currentUser) {
-      this.user.username = currentUser.displayName || '';
-      this.user.photoURL = currentUser.photoURL || 'assets/default-avatar.png';
-    }
-  }
-
-  async saveChanges() {
-    const currentUser = this.auth.currentUser;
-    if (currentUser) {
-      const userRef = doc(this.db, 'users', currentUser.uid);
-      await updateDoc(userRef, { username: this.user.username });
-      alert('Cambios guardados');
-    }
-  }
-
-  async changePhoto() {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*';
-    input.onchange = async (event: any) => {
-      const file = event.target.files[0];
-      if (file) {
-        const storageRef = ref(this.storage, `profile_pictures/${this.auth.currentUser?.uid}`);
-        await uploadBytes(storageRef, file);
-        const photoURL = await getDownloadURL(storageRef);
-        this.user.photoURL = photoURL;
-        await updateDoc(doc(this.db, 'users', this.auth.currentUser!.uid), { photoURL });
+  async ngOnInit() {
+    this.userId = this.authService.getUserId();
+    if (this.userId) {
+      const userRef = doc(this.db, 'users', this.userId);
+      const docSnap = await getDoc(userRef);
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        this.nombre = data['nombre'];
+        this.username = data['username'];
+        this.email = data['email'];
+        this.fotoPerfil = data['fotoPerfil'] || '';
       }
-    };
-    input.click();
+    }
+  }
+
+  habilitarEdicion() {
+    this.isEditing = true;
+  }
+
+  async guardarCambios() {
+    if (!this.userId) return;
+    const userRef = doc(this.db, 'users', this.userId);
+    await updateDoc(userRef, {
+      nombre: this.nombre,
+      username: this.username,
+      fotoPerfil: this.fotoPerfil,
+    });
+    this.isEditing = false;
+    alert('✅ Perfil actualizado');
+  }
+
+  volver() {
+    this.location.back();
+  }
+
+  async seleccionarFoto() {
+    const image = await Camera.getPhoto({
+      quality: 80,
+      allowEditing: true,
+      resultType: CameraResultType.Base64,
+      source: CameraSource.Photos,
+    });
+
+    this.fotoNueva = image.base64String!;
+    this.fotoPerfil = 'data:image/jpeg;base64,' + this.fotoNueva;
+  }
+
+  async tomarFoto() {
+    const image = await Camera.getPhoto({
+      quality: 80,
+      allowEditing: false,
+      resultType: CameraResultType.Base64,
+      source: CameraSource.Camera,
+    });
+
+    this.fotoNueva = image.base64String!;
+    this.fotoPerfil = 'data:image/jpeg;base64,' + this.fotoNueva;
+  }
+
+  async guardarFoto() {
+    if (!this.userId || !this.fotoNueva) return;
+    const fileRef = ref(this.storage, `fotos_perfil/${this.userId}.jpg`);
+    await uploadString(fileRef, this.fotoNueva, 'base64');
+    const url = await getDownloadURL(fileRef);
+    this.fotoPerfil = url;
+    this.fotoNueva = '';
+
+    await updateDoc(doc(this.db, 'users', this.userId), { fotoPerfil: url });
+
+    alert('📸 Foto de perfil guardada');
   }
 }

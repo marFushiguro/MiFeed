@@ -9,41 +9,57 @@
     <ion-row class="ion-justify-content-center">
       <ion-col size-md="6" size-sm="12">
 
-        <!-- LOGO -->
-        <div class="logo-container">
-          <img src="assets/logoA.png" alt="App Logo">
+        <!-- Contenedor con fondo de la tarjeta y logo dentro -->
+        <div class="card">
+          <!-- LOGO dentro de la tarjeta -->
+          <div class="logo-container">
+            <img src="assets/logoArt.png" alt="App Logo">
+          </div>
+
+          <!-- Formulario dentro de la tarjeta -->
+          <form (ngSubmit)="register()">
+            <div class="input-container">
+              <ion-item class="custom-input">
+                <ion-label position="stacked">Nombre</ion-label>
+                <ion-input [(ngModel)]="nombre" name="nombre" type="text" required></ion-input>
+              </ion-item>
+              
+              <ion-item class="custom-input">
+                <ion-label position="stacked">Username</ion-label>
+                <ion-input [(ngModel)]="username" name="username" type="text" required></ion-input>
+              </ion-item>
+
+              <ion-item class="custom-input">
+                <ion-label position="stacked">Email</ion-label>
+                <ion-input [(ngModel)]="email" name="email" type="email" required></ion-input>
+              </ion-item>
+
+              <ion-item class="custom-input">
+                <ion-label position="stacked">Password</ion-label>
+                <ion-input [(ngModel)]="password" name="password" type="password" required (ionInput)="validarPasswordLength()"></ion-input>
+              </ion-item>
+
+              <ion-item class="custom-input">
+                <ion-label position="stacked">Confirm Password</ion-label>
+                <ion-input [(ngModel)]="confirmPassword" name="confirmPassword" type="password" required (ionBlur)="validarPasswords()" (ionInput)="validarPasswords()"></ion-input>
+              </ion-item>
+
+              <!-- Mostrar error de longitud de contraseña -->
+              <p *ngIf="mostrarErrorPasswordLength" class="error-text">⚠️ La contraseña debe tener al menos 8 caracteres.</p>
+
+              <!-- Mostrar error de contraseñas no coincidentes -->
+              <p *ngIf="mostrarErrorPasswords" class="error-text">⚠️ Las contraseñas no coinciden</p>
+
+              <!-- Botón de registro con el estilo personalizado -->
+              <button type="submit" [disabled]="!formValido()">Register</button>
+            </div>
+          </form>
+
+          <p class="login-link">
+            ¿Ya tienes una cuenta?  
+            <a (click)="irAPaginaLogin()">Inicia sesión</a>
+          </p>
         </div>
-
-        <form (ngSubmit)="register()">
-          <ion-item class="custom-input">
-            <ion-label position="stacked">Username</ion-label>
-            <ion-input [(ngModel)]="username" name="username" type="text" required></ion-input>
-          </ion-item>
-
-          <ion-item class="custom-input">
-            <ion-label position="stacked">Email</ion-label>
-            <ion-input [(ngModel)]="email" name="email" type="email" required></ion-input>
-          </ion-item>
-
-          <ion-item class="custom-input">
-            <ion-label position="stacked">Password</ion-label>
-            <ion-input [(ngModel)]="password" name="password" type="password" required></ion-input>
-          </ion-item>
-
-          <ion-item class="custom-input">
-            <ion-label position="stacked">Confirm Password</ion-label>
-            <ion-input [(ngModel)]="confirmPassword" name="confirmPassword" type="password" required (ionBlur)="validarPasswords()"></ion-input>
-          </ion-item>
-
-          <p *ngIf="mostrarErrorPasswords" class="error-text">⚠️ Las contraseñas no coinciden</p>
-
-          <ion-button expand="full" type="submit" [disabled]="!formValido()">Register</ion-button>
-        </form>
-
-        <p class="login-link">
-          ¿Ya tienes una cuenta?  
-          <a (click)="irAPaginaLogin()">Inicia sesión</a>
-        </p>
       </ion-col>
     </ion-row>
   </ion-grid>

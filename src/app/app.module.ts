@@ -17,7 +17,7 @@ import { firebaseConfig } from './services/firebase-config';
     AppRoutingModule,
     // ✅ Firebase ya se inicializa aquí, NO repetir en el constructor
     AngularFireModule.initializeApp(firebaseConfig),
-    AngularFireAuthModule,  // 🔥 Solo se necesita Auth, NO `AngularFireStorageModule`
+    AngularFireAuthModule,  // ✅ Importamos solo lo necesario
   ],
   bootstrap: [AppComponent],
 })
