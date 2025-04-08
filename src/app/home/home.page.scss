@@ -70,3 +70,8 @@ ion-button {
   --padding-start: 8px;
   --padding-end: 8px;
 }
+ion-avatar img {
+  object-fit: cover;
+  border-radius: 50%;
+}
+

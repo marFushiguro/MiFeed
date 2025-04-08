@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { CommonModule } from '@angular/common';
-import { IonicModule, Platform, ModalController } from '@ionic/angular';
+import { IonicModule, Platform, ModalController,MenuController } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../auth/auth.service';
 import { FirestoreService } from '../services/firestore.service';
@@ -10,6 +10,9 @@ import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { AddPostPage } from '../add-post/add-post.page';
 import { AlertController } from '@ionic/angular';
+import { getAuth, deleteUser } from 'firebase/auth';
+import { getFirestore, doc, deleteDoc } from 'firebase/firestore';
+
 
 
 @Component({
@@ -26,6 +29,8 @@ export class HomePage {
   postText: string = '';
   imageUrl: string = '';
   private storage = getStorage();
+  auth = getAuth();
+  firestore = getFirestore();
   currentUserId: string | null = null;
 
   constructor(
@@ -35,7 +40,8 @@ export class HomePage {
     private firestoreService: FirestoreService,
     private platform: Platform,
     private alertCtrl: AlertController,
-    private modalCtrl: ModalController
+    private modalCtrl: ModalController,
+    private menuCtrl: MenuController
   ) {
     console.log('✅ HomePage cargada');
     this.currentUserId = this.authService.getUserId(); // Puede ser null
@@ -58,6 +64,43 @@ export class HomePage {
   goToEvents() {
     this.router.navigate(['/events']);  // Navegar a la ruta de eventos
   }
+
+  async eliminarCuenta() {
+    const alert = await this.alertCtrl.create({
+      header: '¿Estás seguro?',
+      message: 'Esta acción eliminará tu cuenta de forma permanente.',
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Eliminar',
+          role: 'destructive',
+          handler: async () => {
+            const user = this.auth.currentUser;
+            if (user) {
+              try {
+                // Eliminar documento del usuario en Firestore
+                await deleteDoc(doc(this.firestore, 'users', user.uid));
+
+                // Eliminar el usuario autenticado
+                await deleteUser(user);
+
+                await this.menuCtrl.close();
+                this.router.navigateByUrl('/login');
+              } catch (error) {
+                console.error('Error al eliminar cuenta:', error);
+              }
+            }
+          }
+        }
+      ]
+    });
+  
+    await alert.present();
+  }
+
 
   async loadPosts() {
     try {

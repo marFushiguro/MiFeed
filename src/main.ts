@@ -4,6 +4,7 @@ import { provideRouter } from '@angular/router';
 import { routes } from './app/app.routes';
 import { importProvidersFrom } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
+import { defineCustomElements } from '@ionic/pwa-elements/loader';
 
 // Firebase Modular API
 import { initializeApp, provideFirebaseApp, getApps } from '@angular/fire/app';
@@ -27,3 +28,4 @@ bootstrapApplication(AppComponent, {
     provideStorage(() => getStorage(firebaseApp)),
   ],
 }).catch(err => console.error(err));
+defineCustomElements(window);

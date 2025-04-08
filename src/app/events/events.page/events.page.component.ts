@@ -24,7 +24,7 @@ export class EventsPageComponent implements OnInit {
   commentTextPorEvento: { [eventId: string]: string } = {};
 
   userId: string = '';
-  userName: string = '';
+  username: string = '';
   userPhoto: string = '';
 
   // Servicios
@@ -45,7 +45,7 @@ export class EventsPageComponent implements OnInit {
         const userDoc = await getDoc(doc(this.db, 'users', this.userId));
         if (userDoc.exists()) {
           const data = userDoc.data();
-          this.userName = data['name'] || '';
+          this.username = data['name'] || '';
           this.userPhoto = data['photoURL'] || '';
         }
       } catch (error) {
@@ -73,7 +73,7 @@ export class EventsPageComponent implements OnInit {
       fechaLimite: this.eventDate,
       reglas: this.eventRules.split(',').map(rule => rule.trim()),
       userId: this.userId,
-      userName: this.userName,
+      username: this.username,
       userPhoto: this.userPhoto,
       timestamp: Timestamp.fromDate(new Date()),
       submissions: [],

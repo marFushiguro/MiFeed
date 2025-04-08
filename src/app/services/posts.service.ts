@@ -32,13 +32,15 @@ export class PostsService {
   }
 
   // Crear post en Firestore
-  async createPost(userId: string, text: string, imageUrl: string, url: string, location: string) {
-    try {
-      await this.firestoreService.createPost(text, imageUrl, url, location, userId);
-      console.log('Post creado exitosamente');
-    } catch (error) {
-      console.error('Error al crear el post:', error);
-      throw new Error('No se pudo crear el post. Intenta nuevamente.');
-    }
+  // Crear post en Firestore
+async createPost(userId: string, username: string, text: string, imageUrl: string, url: string, location: string) {
+  try {
+    await this.firestoreService.createPost(text, imageUrl, url, location, userId, username);
+    console.log('Post creado exitosamente');
+  } catch (error) {
+    console.error('Error al crear el post:', error);
+    throw new Error('No se pudo crear el post. Intenta nuevamente.');
   }
+}
+
 }

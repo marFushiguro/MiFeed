@@ -17,7 +17,8 @@
 <ion-content>
 
   <!-- Crear evento -->
-  <!-- Crear evento con diseño personalizado compacto -->
+  <!-- Crear evento con diseño personalizado -->
+<!-- Crear evento con diseño personalizado compacto -->
 <div class="card">
   <div style="padding: 16px; display: flex; flex-direction: column; gap: 12px; color: #000; font-weight: 500;">
     <div style="text-align: center;">
@@ -49,8 +50,6 @@
 </div>
 
 
-
-
   <!-- Listado de eventos -->
   <ion-list>
     <ion-item *ngFor="let event of events">
@@ -58,7 +57,7 @@
         <img [src]="event.userPhoto || 'assets/default-avatar.png'" />
       </ion-avatar>
       <ion-label>
-        <h3>{{ event.userName || 'Usuario desconocido' }}</h3>
+        <h3>{{ event.username || 'Usuario desconocido' }}</h3>
         <h2>{{ event.titulo }}</h2>
         <p>{{ event.descripcion }}</p>
         <p><strong>Fecha límite:</strong> {{ event.fechaLimite }}</p>

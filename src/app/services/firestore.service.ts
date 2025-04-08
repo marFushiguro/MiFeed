@@ -25,7 +25,7 @@ export interface Evento {
   fechaLimite: string;
   reglas: string[];
   userId: string;
-  userName: string;        // 👈 Nuevo
+  username: string;        // 👈 Nuevo
   userPhoto: string; 
   timestamp: Timestamp;
   submissions: Submission[];
@@ -145,12 +145,16 @@ export class FirestoreService {
   // 🎉 Eventos
   async createEvento(evento: Evento) {
     try {
-      await addDoc(collection(this.db, 'eventos'), evento);
+      await addDoc(collection(this.db, 'eventos'), {
+        ...evento,
+        username: evento.username,  // Cambié de userName a username aquí
+      });
       console.log('✅ Evento creado');
     } catch (error) {
       console.error('❌ Error creando evento:', error);
     }
   }
+  
 
   async getEvents(): Promise<Evento[]> {
     try {

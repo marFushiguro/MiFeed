@@ -27,8 +27,19 @@
         <ion-icon slot="start" name="log-out"></ion-icon>
         <ion-label>Cerrar sesión</ion-label>
       </ion-item>
-    </ion-list>
-  </ion-content>
+
+      <!-- Aviso de privacidad -->
+      <ion-item href="assets/aviso-privacidad.html" target="_blank">
+        <ion-icon slot="start" name="document-text-outline"></ion-icon>
+        <ion-label>Aviso de privacidad</ion-label>
+      </ion-item>
+    <!-- Eliminar cuenta -->
+    <ion-item (click)="eliminarCuenta()" color="danger">
+      <ion-icon slot="start" name="trash-outline"></ion-icon>
+      <ion-label>Eliminar cuenta</ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>
 </ion-menu>
 
 <!-- Contenido principal -->
