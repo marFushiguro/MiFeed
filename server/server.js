@@ -136,6 +136,40 @@ app.get('/api/user/:userId/token', async (req, res) => {
 });
 
 
+// 🚀 Ruta para actualizar el perfil del usuario
+app.put('/updateUserProfile', async (req, res) => {
+  try {
+    const { userId, nombre, username, fotoPerfilBase64 } = req.body;
+    if (!userId || !nombre || !username) {
+      return res.status(400).json({ error: 'Faltan datos requeridos' });
+    }
+
+    // Si la foto de perfil fue enviada, puedes almacenarla en Firebase Storage y obtener la URL
+    let fotoPerfilUrl = null;
+    if (fotoPerfilBase64) {
+      const bucket = admin.storage().bucket('ionic-2-e5f0a.firebasestorage.app');
+
+
+      const file = bucket.file(`fotos_perfil/${userId}.jpg`);
+      await file.save(Buffer.from(fotoPerfilBase64, 'base64'), { contentType: 'image/jpeg' });
+      fotoPerfilUrl = `https://storage.googleapis.com/${bucket.name}/fotos_perfil/${userId}.jpg`;
+    }
+
+    // Actualizar el documento de usuario en Firestore
+    const userRef = db.collection('users').doc(userId);
+    await userRef.update({
+      nombre,
+      username,
+      fotoPerfil: fotoPerfilUrl || null
+    });
+
+    res.status(200).json({ message: '✅ Perfil actualizado con éxito' });
+  } catch (error) {
+    console.error('❌ Error actualizando el perfil:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // 🌍 Iniciar servidor
 const PORT = 3000;
 app.listen(PORT, () => {

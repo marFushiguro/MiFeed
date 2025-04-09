@@ -72,9 +72,12 @@
           <p><strong>Likes:</strong> {{ post.likes }}</p>
 
           <!-- Botones -->
-          <ion-button (click)="likePost(post.id)" fill="clear">
-            <ion-icon [name]="post.likedByUser ? 'heart' : 'heart-outline'"></ion-icon>
+          <ion-button (click)="likePost(post.id)">
+            <ion-icon [name]="isLiked(post) ? 'heart' : 'heart-outline'"></ion-icon>
+            {{ post.likes }}
           </ion-button>
+          
+          
 
           <ion-button fill="clear" color="medium" (click)="editPost(post)" *ngIf="post.userId === currentUserId">
             <ion-icon slot="icon-only" name="create-outline"></ion-icon>

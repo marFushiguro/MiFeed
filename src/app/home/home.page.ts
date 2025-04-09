@@ -124,6 +124,11 @@ export class HomePage {
       console.error('❌ Error al dar like al post:', error);
     }
   }
+  isLiked(post: any): boolean {
+    const userId = this.authService.getUserId();
+    return post.likedBy && post.likedBy.includes(userId);
+  }
+  
 
   async openAddPostModal() {
     const modal = await this.modalCtrl.create({
