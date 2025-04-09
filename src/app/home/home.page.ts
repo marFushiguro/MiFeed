@@ -197,6 +197,7 @@ export class HomePage {
   async publishPost() {
     const userId = this.authService.getUserId();
     const username = this.authService.getUsername();
+    const userPhoto = this.authService.getUserPhoto();
   
     if (!userId) {
       console.error('❌ No se ha encontrado un usuario autenticado.');
@@ -215,7 +216,8 @@ export class HomePage {
         '',
         '',
         userId,
-        username
+        username,
+        userPhoto
       );
       this.postText = '';
       this.selectedImage = '';

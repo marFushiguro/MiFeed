@@ -46,7 +46,8 @@ export class EventsPageComponent implements OnInit {
         if (userDoc.exists()) {
           const data = userDoc.data();
           this.username = data['name'] || '';
-          this.userPhoto = data['photoURL'] || '';
+          this.userPhoto = data['fotoPerfil'] || '';
+
         }
       } catch (error) {
         console.error('Error al obtener datos del usuario:', error);
@@ -103,6 +104,8 @@ export class EventsPageComponent implements OnInit {
     if (text?.trim()) {
       const comment = {
         userId: this.userId,
+        username: this.username, 
+        userPhoto: this.userPhoto,
         text: text.trim(),
         timestamp: Timestamp.fromDate(new Date()),
         likes: 0,
@@ -131,6 +134,8 @@ export class EventsPageComponent implements OnInit {
   async uploadImageToEvent(eventId: string, imageUrl: string) {
     const submission = {
       userId: this.userId,
+      username: this.username, 
+      userPhoto: this.userPhoto,
       imageUrl: imageUrl,
       timestamp: Timestamp.fromDate(new Date()),
       likes: 0,

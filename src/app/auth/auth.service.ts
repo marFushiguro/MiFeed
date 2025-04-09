@@ -18,6 +18,7 @@ export class AuthService {
   private currentUser: User | null = null;
   private username: string | null = null;
   private nombre: string | null = null;
+  private userPhoto: string | null = null; // Para almacenar la foto de perfil
 
   constructor(private router: Router) {}
 
@@ -33,7 +34,11 @@ export class AuthService {
     return this.nombre;
   }
 
-  async register(email: string, password: string, username: string, nombre: string) {
+  getUserPhoto(): string | null {
+    return this.userPhoto || this.auth.currentUser?.photoURL || null;
+  }
+
+  async register(email: string, password: string, username: string, nombre: string, photoURL: string = '') {
     try {
       const userCredential = await createUserWithEmailAndPassword(this.auth, email, password);
       const user = userCredential.user;
@@ -45,6 +50,7 @@ export class AuthService {
         email: email,
         username: username,
         nombre: nombre,
+        photoURL: photoURL,  // Guardar la foto de perfil en Firestore
         createdAt: new Date().toISOString(),
       });
 
@@ -52,6 +58,7 @@ export class AuthService {
       this.currentUser = user;
       this.username = username;
       this.nombre = nombre;
+      this.userPhoto = photoURL;
 
       // Obtener y guardar el token de FCM
       await this.saveToken(user.uid);
@@ -81,17 +88,20 @@ export class AuthService {
           email: string;
           uid: string;
           createdAt: string;
+          photoURL: string;
           fcmToken?: string;
         }
 
         const data = docSnap.data() as UserData;
         this.username = data.username;
         this.nombre = data.nombre;
+        this.userPhoto = data.photoURL;  // Obtener la foto de perfil desde Firestore
         console.log('✅ Usuario autenticado:', data);
       } else {
         console.log('❌ No se encontró el documento del usuario');
         this.username = null;
         this.nombre = null;
+        this.userPhoto = null;
       }
 
       // Guardar el token de FCM
@@ -134,6 +144,7 @@ export class AuthService {
     signOut(this.auth);
     this.username = null;
     this.nombre = null;
+    this.userPhoto = null;
     this.currentUser = null;
     this.router.navigate(['/login']);
   }

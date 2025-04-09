@@ -33,9 +33,9 @@ export class PostsService {
 
   // Crear post en Firestore
   // Crear post en Firestore
-async createPost(userId: string, username: string, text: string, imageUrl: string, url: string, location: string) {
+async createPost(userId: string, username: string, text: string, imageUrl: string, url: string, location: string, userPhoto: string | null) {
   try {
-    await this.firestoreService.createPost(text, imageUrl, url, location, userId, username);
+    await this.firestoreService.createPost(text, imageUrl, url, location, userId, username, userPhoto);
     console.log('Post creado exitosamente');
   } catch (error) {
     console.error('Error al crear el post:', error);

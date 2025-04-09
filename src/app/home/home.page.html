@@ -34,7 +34,7 @@
         <ion-label>Aviso de privacidad</ion-label>
       </ion-item>
     <!-- Eliminar cuenta -->
-    <ion-item (click)="eliminarCuenta()" color="danger">
+    <ion-item (click)="eliminarCuenta()" >
       <ion-icon slot="start" name="trash-outline"></ion-icon>
       <ion-label>Eliminar cuenta</ion-label>
     </ion-item>
@@ -53,7 +53,7 @@
         <!-- Info de usuario -->
         <ion-item lines="none">
           <ion-avatar slot="start">
-            <img [src]="post.fotoPerfil || 'assets/default-profile.png'" />
+            <img [src]="post.userPhoto || 'assets/default-profile.png'" />
           </ion-avatar>
           <ion-label>
             <h2>{{ post.username || 'Usuario' }}</h2>

@@ -11,11 +11,24 @@
 
 <ion-content class="ion-padding">
   <ion-list>
+    <!-- Foto de perfil del usuario -->
+    <ion-item>
+      <ion-avatar slot="start">
+        <img [src]="fotoPerfil || 'assets/default-avatar.png'" />
+      </ion-avatar>
+      <ion-label>
+        <h3>{{ username }}</h3>
+      </ion-label>
+    </ion-item>
+
+
+    <!-- Campo de texto para el post -->
     <ion-item>
       <ion-label position="stacked">Texto</ion-label>
       <ion-textarea [(ngModel)]="post.text" placeholder="Escribe algo..."></ion-textarea>
     </ion-item>
 
+    <!-- Selección de imagen -->
     <ion-item>
       <ion-label position="stacked">Imagen</ion-label>
       <input hidden #fileInput type="file" (change)="uploadImage($event)" accept="image/*" />
@@ -29,15 +42,18 @@
       </ion-button>
     </ion-item>
 
+    <!-- Vista previa de la imagen seleccionada -->
     <div class="image-preview" *ngIf="selectedImage">
       <img [src]="selectedImage" class="preview-img" />
     </div>
 
+    <!-- Campo para la ubicación -->
     <ion-item>
       <ion-label position="stacked">Ubicación</ion-label>
       <ion-input [(ngModel)]="post.location" placeholder="Ingresa una ubicación"></ion-input>
     </ion-item>
   </ion-list>
 
+  <!-- Botón para publicar -->
   <ion-button expand="full" color="success" (click)="publishPost()">Publicar</ion-button>
 </ion-content>

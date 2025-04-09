@@ -51,7 +51,7 @@ export class FirestoreService {
   constructor() {}
 
   // Crear un post
-  async createPost(postText: string, imageUrl: string, url: string, location: string, userId: string, username: string) {
+  async createPost(postText: string, imageUrl: string, url: string, location: string, userId: string, username: string, userPhoto: string | null) {
     try {
       const postRef = await addDoc(collection(this.db, 'posts'), {
         text: postText,
@@ -60,6 +60,7 @@ export class FirestoreService {
         location,
         userId,
         username,
+        userPhoto,
         timestamp: Timestamp.fromDate(new Date()),
         likes: 0,
         likedBy: []
@@ -71,7 +72,7 @@ export class FirestoreService {
   }
 
   // Actualizar un post
-  async updatePost(postId: string, updatedData: { text?: string; imageUrl?: string; url?: string; location?: string }) {
+  async updatePost(postId: string, updatedData: { text?: string; imageUrl?: string; url?: string; location?: string; userId?: string | null; userPhoto?: string | null, fotoPerfil?: string | null; }) {
     try {
       const postRef = doc(this.db, 'posts', postId);
       await updateDoc(postRef, updatedData);
@@ -93,16 +94,21 @@ export class FirestoreService {
   }
 
   // Obtener todos los posts
-  async getPosts() {
-    try {
-      const postsCollection = collection(this.db, 'posts');
-      const snapshot = await getDocs(postsCollection);
-      return snapshot.docs.map(doc => ({ id: doc.id, ...(doc.data() as DocumentData) }));
-    } catch (e) {
-      console.error('❌ Error obteniendo posts:', e);
-      return [];
-    }
+  // Obtener todos los posts
+async getPosts() {
+  try {
+    const postsCollection = collection(this.db, 'posts');
+    const snapshot = await getDocs(postsCollection);
+    return snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data() as DocumentData, // Obtienes todos los datos del documento, incluyendo userPhoto
+    }));
+  } catch (e) {
+    console.error('❌ Error obteniendo posts:', e);
+    return [];
   }
+}
+
 
   // Toggle de like para un post
   async toggleLike(postId: string, userId: string) {

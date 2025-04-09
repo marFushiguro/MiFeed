@@ -68,10 +68,21 @@
         <div *ngIf="event.comments?.length > 0">
           <ion-list>
             <ion-item *ngFor="let comment of event.comments; let i = index">
+              <ion-avatar slot="start">
+                <img [src]="comment.userPhoto || 'assets/default-avatar.png'" />
+              </ion-avatar>
               <ion-label>
+                <strong>{{ comment.username || 'Usuario' }}</strong>
                 <p>{{ comment.text }}</p>
                 <p><strong>Likes:</strong> {{ comment.likes }}</p>
-                <ion-button *ngIf="!comment.likedBy.includes(userId)" (click)="likeComment(event.id, i)">Like</ion-button>
+                <ion-button
+                  fill="clear"
+                  size="small"
+                  *ngIf="!comment.likedBy.includes(userId)"
+                  (click)="likeComment(event.id, i)">
+                  <ion-icon name="heart-outline"></ion-icon>
+                  Like
+                </ion-button>
               </ion-label>
             </ion-item>
           </ion-list>
@@ -83,14 +94,43 @@
           <ion-button (click)="addComment(event.id)">Comentar</ion-button>
         </ion-item>
 
-        <ion-button *ngIf="event.userId === userId && !event.finalizado" (click)="uploadImageToEvent(event.id, 'imageUrl')">Subir Imagen</ion-button>
+        <!-- Subir imagen si es el autor -->
+        <ion-button
+          *ngIf="event.userId === userId && !event.finalizado"
+          (click)="uploadImageToEvent(event.id, 'imageUrl')">
+          Subir Imagen
+        </ion-button>
+
+        <!-- Submissions (si decides mostrarlas más adelante) -->
+        <div *ngIf="event.submissions?.length > 0" style="margin-top: 12px;">
+          <ion-list>
+            <ion-item *ngFor="let sub of event.submissions; let i = index">
+              <ion-avatar slot="start">
+                <img [src]="sub.userPhoto || 'assets/default-avatar.png'" />
+              </ion-avatar>
+              <ion-label>
+                <strong>{{ sub.username || 'Usuario' }}</strong>
+                <img [src]="sub.imageUrl" style="width: 100%; max-height: 200px; object-fit: cover; border-radius: 10px; margin-top: 8px;" />
+                <p><strong>Likes:</strong> {{ sub.likes }}</p>
+                <ion-button
+                  fill="clear"
+                  size="small"
+                  *ngIf="!sub.likedBy.includes(userId)"
+                  (click)="likeImage(event.id, i)">
+                  <ion-icon name="heart-outline"></ion-icon>
+                  Like
+                </ion-button>
+              </ion-label>
+            </ion-item>
+          </ion-list>
+        </div>
+
       </ion-label>
     </ion-item>
   </ion-list>
 </ion-content>
 
 <!-- Barra de navegación inferior -->
-
 <div class="custom-tab-bar">
   <button class="button" routerLink="/home">
     <ion-icon class="icon" name="home-outline"></ion-icon>
