@@ -1,4 +1,4 @@
-package io.ionic.starter;
+package com.marbe.appFeed;
 
 import com.getcapacitor.BridgeActivity;
 
