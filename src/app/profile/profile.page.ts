@@ -1,5 +1,16 @@
-import { Component, OnInit } from '@angular/core';
+// Definición de la interfaz para la respuesta del perfil
+interface UpdateProfileResponse {
+  message: string;
+  nombre: string;
+  username: string;
+  email: string;
+  fotoPerfil: string | null;
+}
+
+import { Component, OnInit } from '@angular/core'; 
 import { AuthService } from '../auth/auth.service';
+import { HttpClient } from '@angular/common/http';
+import { HttpClientModule } from '@angular/common/http';
 import { doc, getFirestore, getDoc, updateDoc } from 'firebase/firestore';
 import { firebaseConfig } from '../services/firebase-config';
 import { initializeApp } from 'firebase/app';
@@ -16,7 +27,7 @@ import { Location } from '@angular/common';
   templateUrl: './profile.page.html',
   styleUrls: ['./profile.page.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule, RouterModule],
+  imports: [CommonModule, FormsModule, IonicModule, RouterModule, HttpClientModule],
 })
 export class ProfilePage implements OnInit {
   userId: string | null = null;
@@ -30,19 +41,27 @@ export class ProfilePage implements OnInit {
   private db = getFirestore(initializeApp(firebaseConfig));
   private storage = getStorage();
 
-  constructor(private authService: AuthService, private location: Location) {}
+  constructor(
+    private authService: AuthService,
+    private location: Location,
+    private httpClient: HttpClient
+  ) {}
 
   async ngOnInit() {
     this.userId = this.authService.getUserId();
     if (this.userId) {
-      const userRef = doc(this.db, 'users', this.userId);
-      const docSnap = await getDoc(userRef);
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        this.nombre = data['nombre'];
-        this.username = data['username'];
-        this.email = data['email'];
-        this.fotoPerfil = data['fotoPerfil'] || '';
+      // Obtener los datos del usuario desde Firestore o un servidor
+      const userRef = `http://localhost:3000/users/${this.userId}`;
+      try {
+        const response = await this.httpClient.get<UpdateProfileResponse>(userRef).toPromise();
+        if (response) {
+          this.nombre = response.nombre;
+          this.username = response.username;
+          this.email = response.email;
+          this.fotoPerfil = response.fotoPerfil || '';
+        }
+      } catch (error) {
+        console.error('Error al obtener los datos del usuario:', error);
       }
     }
   }
@@ -53,14 +72,24 @@ export class ProfilePage implements OnInit {
 
   async guardarCambios() {
     if (!this.userId) return;
-    const userRef = doc(this.db, 'users', this.userId);
-    await updateDoc(userRef, {
+
+    const body = {
+      userId: this.userId,
       nombre: this.nombre,
       username: this.username,
-      fotoPerfil: this.fotoPerfil,
-    });
-    this.isEditing = false;
-    alert('✅ Perfil actualizado');
+      fotoPerfilBase64: this.fotoNueva ? this.fotoNueva : undefined
+    };
+
+    try {
+      const response = await this.httpClient.post<UpdateProfileResponse>('http://localhost:3000/updateUserProfile', body).toPromise();
+      if (response) {
+        alert(response.message);
+        this.isEditing = false;
+      }
+    } catch (error) {
+      console.error('Error al actualizar el perfil:', error);
+      alert('Error al actualizar el perfil');
+    }
   }
 
   volver() {
@@ -90,7 +119,6 @@ export class ProfilePage implements OnInit {
     this.fotoNueva = image.base64String!;
     this.fotoPerfil = 'data:image/jpeg;base64,' + this.fotoNueva;
   }
-
   async guardarFoto() {
     if (!this.userId || !this.fotoNueva) return;
     const fileRef = ref(this.storage, `fotos_perfil/${this.userId}.jpg`);
@@ -103,4 +131,5 @@ export class ProfilePage implements OnInit {
 
     alert('📸 Foto de perfil guardada');
   }
+
 }
