@@ -2,8 +2,9 @@
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-button routerLink="/home">
-        <ion-icon name="arrow-back"></ion-icon>
+        <ion-icon name="arrow-back" style="color: #f54590;"></ion-icon>
       </ion-button>
+      
     </ion-buttons>
     <ion-title>Eventos</ion-title>
     <ion-buttons slot="end">
@@ -89,25 +90,15 @@
 </ion-content>
 
 <!-- Barra de navegación inferior -->
-<ion-footer>
-  <ion-toolbar>
-    <ion-tabs>
-      <ion-tab-bar slot="bottom">
-        <ion-tab-button routerLink="/home">
-          <ion-icon name="home"></ion-icon>
-          <ion-label>Inicio</ion-label>
-        </ion-tab-button>
 
-        <ion-tab-button (click)="openAddPostModal()">
-          <ion-icon name="add-circle"></ion-icon>
-          <ion-label>Agregar</ion-label>
-        </ion-tab-button>
-
-        <ion-tab-button routerLink="/eventos">
-          <ion-icon name="calendar"></ion-icon>
-          <ion-label>Eventos</ion-label>
-        </ion-tab-button>
-      </ion-tab-bar>
-    </ion-tabs>
-  </ion-toolbar>
-</ion-footer>
+<div class="custom-tab-bar">
+  <button class="button" routerLink="/home">
+    <ion-icon class="icon" name="home-outline"></ion-icon>
+  </button>
+  <button class="button" (click)="openAddPostModal()">
+    <ion-icon class="icon" name="add-circle-outline"></ion-icon>
+  </button>
+  <button class="button" routerLink="/eventos">
+    <ion-icon class="icon" name="calendar-outline"></ion-icon>
+  </button>
+</div>

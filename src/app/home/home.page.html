@@ -90,28 +90,18 @@
 </ion-content>
 
 <!-- Barra de navegación inferior -->
-<ion-footer>
-  <ion-toolbar>
-    <ion-tabs>
-      <ion-tab-bar slot="bottom">
-        <ion-tab-button>
-          <ion-icon name="home"></ion-icon>
-          <ion-label>Inicio</ion-label>
-        </ion-tab-button>
+<div class="custom-tab-bar">
+  <button class="button" (click)="goBack()">
+    <ion-icon name="home" class="icon"></ion-icon>
+  </button>
+  <button class="button" (click)="openAddPostModal()">
+    <ion-icon name="add-circle" class="icon"></ion-icon>
+  </button>
+  <button class="button" (click)="goToEvents()">
+    <ion-icon name="calendar" class="icon"></ion-icon>
+  </button>
+</div>
 
-        <ion-tab-button (click)="openAddPostModal()">
-          <ion-icon name="add-circle"></ion-icon>
-          <ion-label>Agregar</ion-label>
-        </ion-tab-button>
-
-        <ion-tab-button (click)="goToEvents()">
-          <ion-icon name="calendar"></ion-icon>
-          <ion-label>Eventos</ion-label>
-        </ion-tab-button>
-      </ion-tab-bar>
-    </ion-tabs>
-  </ion-toolbar>
-</ion-footer>
 
 <!-- Botón flotante -->
 <ion-fab vertical="bottom" horizontal="end" slot="fixed">
