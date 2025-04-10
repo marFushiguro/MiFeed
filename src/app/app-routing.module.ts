@@ -5,7 +5,7 @@ import { HomePage } from './home/home.page'; // Importa la página de inicio
 import { ProfilePage } from './profile/profile.page';
 import { EventsPageComponent } from 'src/app/events/events.page/events.page.component';
 import { MyEventsComponent } from 'src/app/my-events/my-events.component'; 
-
+import { ConfirmEliminacionPage } from './confirm-eliminacion/confirm-eliminacion.page';
 
 
 
@@ -32,7 +32,12 @@ const routes: Routes = [
   {
     path: 'my-events',
     loadComponent: () => import('./my-events/my-events.component').then(m => m.MyEventsComponent)
-  }
+  },
+  {
+    path: 'confirm-eliminacion',
+    loadComponent: () => import('./confirm-eliminacion/confirm-eliminacion.page').then(m => m.ConfirmEliminacionPage)
+  },
+ 
   
 ];
 

@@ -170,6 +170,28 @@ app.put('/updateUserProfile', async (req, res) => {
   }
 });
 
+// 🚀 Ruta para eliminar una cuenta de usuario
+app.delete('/deleteUser/:userId', async (req, res) => {
+  const { userId } = req.params;
+  try {
+    // Eliminar usuario de Auth (si se requiere, con admin.auth().deleteUser(userId))
+
+    // Eliminar usuario de Firestore
+    await db.collection('users').doc(userId).delete();
+
+    // Eliminar posts del usuario
+    const postsSnapshot = await db.collection('posts').where('userId', '==', userId).get();
+    const deletePromises = postsSnapshot.docs.map(doc => doc.ref.delete());
+    await Promise.all(deletePromises);
+
+    res.status(200).json({ message: '✅ Cuenta eliminada correctamente' });
+  } catch (error) {
+    console.error('❌ Error al eliminar cuenta:', error);
+    res.status(500).json({ error: 'Error al eliminar cuenta' });
+  }
+});
+
+
 // 🌍 Iniciar servidor
 const PORT = 3000;
 app.listen(PORT, () => {
